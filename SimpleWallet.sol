@@ -10,19 +10,33 @@ contract SimpleWallet {
 
     address payable public owner;
 
+    // Only the owner can call transactions marked with this modifier
+    modifier onlyOwner() {
+        require(owner == msg.sender, "Only the owner can call this function");
+        _;
+    }
+
+    // Assigns the address deploying the contract as the owner
     constructor() {
         owner = payable(msg.sender);
     }
 
 
+    // Allows the owner to transfer ownership of the contract
+    function transferOwnership(address payable _newOwner) external onlyOwner {
+        owner = _newOwner;
+    }
+
+
+    // Function to allow the contract to receive funds.
     receive() external payable {
         emit transferReceived(msg.sender, msg.value);
     }
 
 
-    function withdraw(uint _amount) external {
-        require(msg.sender == owner, "Only the owner can withdraw");
-        payable(msg.sender).transfer(_amount); 
+    // Allows the owner to specify and amount and withdraw it
+    function withdraw(uint _amount) external onlyOwner{
+        payable(msg.sender).transfer(_amount);
 
         uint currentBalance = address(this).balance - _amount;
         emit withdrawFunds(_amount);
@@ -30,7 +44,15 @@ contract SimpleWallet {
     }
 
 
+    // Retrieve the current contract balance
     function getBalance() external view returns (uint) {
         return address(this).balance;
+    }
+
+
+    // Destroy this contract 
+    function destroy(address payable recipient) public onlyOwner {
+        payable(msg.sender).transfer(address(this).balance);
+        selfdestruct(recipient);
     }
 }
