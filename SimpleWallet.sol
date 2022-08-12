@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract SimpleWallet {
+contract Web3Safe {
 
     // Set up events when:
     event transferReceived(address sender, uint value);     // The wallet receives funds
@@ -21,6 +21,11 @@ contract SimpleWallet {
         owner = payable(msg.sender);
     }
 
+
+    // Retrieve the current contract's owner
+    function getOwner() view external returns(address) {
+        return owner;
+    }
 
     // Allows the owner to transfer ownership of the contract
     function transferOwnership(address payable _newOwner) external onlyOwner {
@@ -44,7 +49,7 @@ contract SimpleWallet {
     }
 
 
-    // Retrieve the current contract balance
+    // Retrieve the current contract's balance
     function getBalance() external view returns (uint) {
         return address(this).balance;
     }
