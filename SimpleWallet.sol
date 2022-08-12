@@ -50,7 +50,7 @@ contract SimpleWallet {
     }
 
 
-    // Destroy this contract 
+    // Destroy this contract, withdraw all the funds before destroying it
     function destroy(address payable recipient) public onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
         selfdestruct(recipient);
